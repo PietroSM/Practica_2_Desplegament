@@ -180,7 +180,7 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
     }catch(error){
         console.log(error);
         let errors = {
-            general: 'Error insertant pacient'
+            general: 'Error Editant pacient'
         };
         if(error.errors.name){
             errors.name = error.errors.name.message;

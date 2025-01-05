@@ -12,6 +12,10 @@
                 <p><strong>Data de naixement: </strong>{{ physio.birthDate }}</p>
                 <p><strong>Especialitat: </strong>{{ physio.specialty }}</p>
                 <p><strong>Número de licencia: </strong>{{ physio.licenseNumber }}</p>
+                <a class="btn btn-primary" href="/physios/{{ physios.id }}/edit">Editar</a>
+                {% if physios.image %}
+                    <p><img src="/public/uploads/{{ physios.image }}"></p>
+                {% endif %}
             </div>
         </div>
 {% endblock %}

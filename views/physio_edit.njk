@@ -1,0 +1,64 @@
+{% extends "base.njk" %}
+
+{% block titol %} Physio | Editar {% endblock %}
+
+
+{% block contingut %}
+    <h1 class="mb-4">Edició physio</h1>
+
+    {% if errors.general %}
+        <p class="alert alert-danger">{{ errors.general }}</p>
+    {% endif %}
+
+    {% if(physio) %}
+
+        <form action="/physios/{{ physio.id }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Nom: </label>
+                {% if errors.name %}
+                    <p class="text-danger">{{ errors.name }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="name" 
+                    placeholder="Nom del physio..." value="{{ physio.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="surname">Cognom: </label>
+                {% if errors.surname %}
+                    <p class="text-danger">{{ errors.surname }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="surname" 
+                    placeholder="Cognom del physio..." value="{{ physio.surname }}">
+            </div>
+
+            <div class="form-group">
+                <label for="specialty">Especialitat: </label>
+                {% if errors.specialty %}
+                    <p class="text-danger">{{ errors.specialty }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="specialty" 
+                    placeholder="Especialitat del physio..." value="{{ physio.specialty }}">
+            </div>
+
+            <div class="form-group">
+                <label for="licenseNumber">Numero de licencia: </label>
+                {% if errors.licenseNumber %}
+                    <p class="text-danger">{{ errors.licenseNumber }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="licenseNumber" 
+                    placeholder="licencia del physio..." value="{{ physio.licenseNumber }}">
+            </div>
+
+            <div class="form-group">
+                <label for="image">Imatge:</label>
+                <input type="file" class="form-control" name="image"
+                    placeholder="Imatge del patient..." />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    {% else %}
+        <div class="alert alert-danger">Physio no especificat</div>
+    {% endif %}
+
+{% endblock %}
