@@ -1,0 +1,17 @@
+{% extends "base.njk" %}
+
+{% block titol %} Physios | Fitxa {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Fitxa de Physio</h1>
+    
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Nom: </strong>{{ physio.name }}</p>
+                <p><strong>Cognom: </strong>{{ physio.surname }}</p>
+                <p><strong>Data de naixement: </strong>{{ physio.birthDate }}</p>
+                <p><strong>Especialitat: </strong>{{ physio.specialty }}</p>
+                <p><strong>Número de licencia: </strong>{{ physio.licenseNumber }}</p>
+            </div>
+        </div>
+{% endblock %}

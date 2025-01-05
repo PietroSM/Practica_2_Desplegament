@@ -1,0 +1,72 @@
+{% extends "base.njk" %}
+
+{% block titol %} Patients | Editar {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Edició de patient</h1>
+
+    {% if(patient) %}
+
+        {% if errors.general %}
+            <p class="alert alert-danger">{{ errors.general }}</p>
+        {% endif %}
+
+        <form action="/patients/{{ patient.id }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Nom: </label>
+                {% if errors.name %}
+                    <p class="text-danger">{{ errors.name }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="name" 
+                    placeholder="Nom del patient..." value="{{ patient.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="surname">Cognom: </label>
+                {% if errors.surname %}
+                    <p class="text-danger">{{ errors.surname }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="surname" 
+                    placeholder="Cognom del patient..." value="{{ patient.surname }}">
+            </div>
+
+            <div class="form-group">
+                <label for="birthDate">Data Naixement: </label>
+                {% if errors.birthDate %}
+                    <p class="text-danger">{{ errors.birthDate }}</p>
+                {% endif %}
+                <input type="date" class="form-control" name="birthDate" value="{{ data }}">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Adreça: </label>
+                {% if errors.address %}
+                    <p class="text-danger">{{ errors.address }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="address" 
+                    placeholder="Adreça del patient..." value="{{ patient.address }}">
+            </div>
+
+            <div class="form-group">
+                <label for="insuranceNumber">Numero sanitari: </label>
+                {% if errors.insuranceNumber %}
+                    <p class="text-danger">{{ errors.insuranceNumber }}</p>
+                {% endif %}
+                <input type="text" class="form-control" name="insuranceNumber" 
+                    placeholder="Numero sanitari del patient..." value="{{ patient.insuranceNumber }}">
+            </div>
+
+            <div class="form-group">
+                <label for="image">Imatge:</label>
+                <input type="file" class="form-control" name="image"
+                    placeholder="Imatge del patient..." />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enviar</button>
+
+        </form>
+    {% else %}
+        <div class="alert alert-danger">Patient no especificat</div>
+    {% endif %}
+
+{% endblock %}

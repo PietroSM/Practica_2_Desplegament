@@ -1,0 +1,33 @@
+{% extends "base.njk" %}
+
+{% block titol %} Patients | Fitxa {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Fitxa de patient</h1>
+    
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Nom: </strong>{{ record.patient.name }}</p>
+                <p><strong>Cognom: </strong>{{ record.patient.surname }}</p>
+                <p><strong>Data de naixement: </strong>{{ record.patient.birthDate}}</p>
+                <p><strong>Adreça: </strong>{{ record.patient.address }}</p>
+                <p><strong>Número d'assegurança: </strong>{{ record.patient.insuranceNumber }}</p>
+            </div>
+            <div class="card-body">
+                <p><strong>medicalRecord: </strong> {{ record.medicalRecord }}</p>
+
+                <table class="table table-striped table-hover">
+                    {% for appointment in record.appointments %}
+                        <tr>
+                            <td>{{ appointment.date }}</td>
+                            <td>{{ appointment.physio }}</td>
+                            <td>{{ appointment.diagnosis }}</td>
+                            <td>{{ appointment.treatment }}</td>
+                            <td>{{ appointment.observations }}</td>
+                            
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+{% endblock %}

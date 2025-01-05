@@ -1,0 +1,21 @@
+{% extends "base.njk" %}
+
+{% block titol %} Patients | Fitxa {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Fitxa de patient</h1>
+    
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Nom: </strong>{{ patient.name }}</p>
+                <p><strong>Cognom: </strong>{{ patient.surname }}</p>
+                <p><strong>Data de naixement: </strong>{{ patient.birthDate}}</p>
+                <p><strong>Adreça: </strong>{{ patient.address }}</p>
+                <p><strong>Número d'assegurança: </strong>{{ patient.insuranceNumber }}</p>
+                <a class="btn btn-primary" href="/patients/{{ patient.id }}/edit">Editar</a>
+                {% if patient.image %}
+                    <p><img src="/public/uploads/{{ patient.image }}"></p>
+                {% endif %}
+            </div>
+        </div>
+{% endblock %}

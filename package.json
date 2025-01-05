@@ -1,0 +1,28 @@
+{
+  "name": "physiocare",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PietroSM/Pr-ctica_1_Desplegament-.git"
+  },
+  "author": "Pedro Sala Mora",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PietroSM/Pr-ctica_1_Desplegament-/issues"
+  },
+  "homepage": "https://github.com/PietroSM/Pr-ctica_1_Desplegament-#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bootstrap": "^5.3.3",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.1",
+    "multer": "^1.4.5-lts.1",
+    "nunjucks": "^3.2.4",
+    "nunjucks-date-filter": "^0.1.1"
+  }
+}
