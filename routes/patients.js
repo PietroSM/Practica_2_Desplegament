@@ -39,12 +39,13 @@ router.get('/find', async(req, res) => {
         });
     
         if(resultat.length > 0){
-            res.status(200).send({result: resultat});
+            res.render('patients_list', { patients: resultat});
         }else{
-            res.status(404).send({result: "No hi ha pacients amb aquests criteris"});
+            res.render('patients_list');
         }
     }catch (error){
-        res.status(500).send({error: "Error buscant el pacient indicat"});
+        res.render('error', {error: "Va haver-hi un problema en processar la" +
+            "busca. Intente-ho més tard "});
     }
 });
 
@@ -149,10 +150,6 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         res.render('patient_add', {errors: errors, dades: req.body});
     }
 });
-
-
-
-
 
 
 //Actualitza les dades a un pacient.

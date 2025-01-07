@@ -1,8 +1,13 @@
-<div class="alert alert-secondary">
+<div class="alert alert-secondary d-flex align-items-center gap-2">
     <a class="btn btn-dark" href="/login">Login</a>
     <a class="btn btn-dark" href="/patients">Patient</a>
     <a class="btn btn-dark" href="/patients/new">Nou Patient</a>
     <a class="btn btn-dark" href="/physios">Physio</a>
     <a class="btn btn-dark" href="/physios/new">Nou Physio</a>
     <a class="btn btn-dark" href="/records">Record</a>
+
+    <form action="/patients/find" method="get" class="d-flex align-items-center">
+        <input type="text" name="surname" placeholder="cognom..." class="form-control me-2"/>
+        <button type="submit" class="btn btn-dark">Cercar Patient</button>
+    </form>
 </div>
