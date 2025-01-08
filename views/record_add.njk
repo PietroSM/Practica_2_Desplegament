@@ -1,0 +1,35 @@
+{% extends "base.njk" %}
+
+{% block titol %} Records | Nou {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Insertar un nou Record</h1>
+
+    {% if errors.general %}
+        <p class="alert alert-danger">{{ errors.general }}</p>
+    {% endif %}
+
+    <form action="/records" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="patient">id Patient: </label>
+            {% if errors.patient %}
+                <p class="text-danger">{{ errors.patient }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="patient" 
+                placeholder="id Patient..." value="{{ dades.patient }}">
+        </div>
+
+        <div class="form-group">
+            <label for="medicalRecord">medical Record: </label>
+            {% if errors.medicalRecord %}
+                <p class="text-danger">{{ errors.medicalRecord }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="medicalRecord" 
+                placeholder="medical Record..." value="{{ dades.medicalRecord }}">
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+
+{% endblock %}

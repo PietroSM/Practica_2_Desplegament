@@ -4,7 +4,7 @@ const { Appointment, Record } = require(__dirname + "/../models/record.js");
 let Patient = require(__dirname + "/../models/patient.js");
 const User = require(__dirname + '/../models/user.js');
 let router = express.Router();
-
+const upload = require(__dirname + '/../utils/uploads.js');
 
 //Obtindre tots els expedients mèdics.
 router.get('/', async (req, res) => {
@@ -22,6 +22,12 @@ router.get('/', async (req, res) => {
 });
 
 
+//Formulari nou record
+router.get('/new', (req, res) => {
+    res.render('record_add');
+});
+
+
 //Buscar expedients per nom de pacient.
 router.get('/find', async(req, res) => {
     try{
@@ -34,14 +40,14 @@ router.get('/find', async(req, res) => {
         });
 
         let idsPatients = resultatPatient.map(p=>p._id);
-        const resultatRecord = await Record.find({patient : {$in: idsPatients}});
+        const resultatRecord = await Record.find({patient : {$in: idsPatients}}).populate('patient');
         
     
         if(resultatRecord.length > 0){
-            res.status(200).send({result: resultatRecord});
+            res.render('records_list', { records: resultatRecord});
         }else{
-            res.status(404).send({error: "No hi ha expedients amb aquests criteris"});
-        }
+            res.render('error',{error: "No es van trobar expedients associats al" +
+                "cognom ingressat."});        }
     }catch (error){
         res.status(500).send({error: "Error buscant el expedient indicat"});
     }
@@ -64,17 +70,29 @@ router.get('/:id', async (req, res) => {
 
 
 //Inserir un expedient mèdic.
-router.post('/', async (req, res) => {
+router.post('/', upload.upload.single(), async (req, res) => {
     try{
         let nouRecords = new Record({
             patient: req.body.patient,
             medicalRecord: req.body.medicalRecord
         });
 
+        console.log(req.body.medicalRecord);
+
         const resultat = await nouRecords.save();
-        res.status(201).send({result: resultat});
+        res.redirect(req.baseUrl);
     }catch (error){
-        res.status(400).send({result:"Error al inserir un expedient"});
+        let errors = {
+            general: 'Error al inserir un expedient'
+        };
+        if(error.errors.patient){
+            errors.patient = error.errors.patient.message;
+        }
+        if(error.errors.medicalRecord){
+            errors.medicalRecord = error.errors.medicalRecord.message;
+        }
+
+        res.render('record_add', {errors: errors, dades: req.body});
     }
 });
 

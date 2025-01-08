@@ -34,12 +34,13 @@ router.get('/find', async (req, res) =>{
         });
 
         if(resultat.length > 0){
-            res.status(200).send({result: resultat});
+            res.render('physios_list', { physios: resultat});
         }else{
-            res.status(404).send({error: "No hi ha fisioterapeutes amb aquests criteris"});
+            res.render('error',{error: "No es van trobar"+
+                    "fisioterapeutes amb l'especialitat indicada."});
         }
     }catch (error){
-        res.status(500).send({error: "Error buscant el fisioterapeutes indicat"});
+        res.render('error', {error: "Error buscant el fisioterapeutes indicat"});
     }
 });
 

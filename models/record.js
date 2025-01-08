@@ -33,12 +33,12 @@ let recordSchema = new mongoose.Schema({
     patient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'patients',
-        required: true,
+        required: [true, 'El id del patient es obligatori'],
         unique: true
     },
     medicalRecord: {
         type: String,
-        maxlength: 1000
+        maxlength: [1000, 'El medical record es massa llarg']
     },
     appointments: [appointmentsSchema]
 });

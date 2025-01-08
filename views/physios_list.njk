@@ -5,6 +5,15 @@
 {% block contingut %}
     <h1 class="mb-4">Llistat de Physios</h1>
 
+    <div class="form-group">
+        <form action="/physios/find" method="get">
+            <input type="text" name="specialty"/>
+            <button type="submit" class="btn btn-dark">Cercar</button>
+        </form>
+    </div>
+
+
+
     <table class="table table-striped table-hover">
         {% for physio in physios %}   
             <tr>
