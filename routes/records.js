@@ -27,6 +27,13 @@ router.get('/new', (req, res) => {
     res.render('record_add');
 });
 
+//Formulari nova cita
+router.get('/:id/appointments/new', (req, res) => {
+    res.render('record_appointment_add', {id: req.params.id});
+});
+
+
+
 
 //Buscar expedients per nom de pacient.
 router.get('/find', async(req, res) => {

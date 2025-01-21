@@ -5,6 +5,7 @@
 {% block contingut %}
     <h1 class="mb-4">Fitxa de patient</h1>
     
+        <a class="btn btn-primary" href="/records/{{ record.patient.id }}/appointments/new">Afegir Cita</a>
         <div class="card">
             <div class="card-body">
                 <p><strong>Nom: </strong>{{ record.patient.name }}</p>

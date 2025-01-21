@@ -4,26 +4,26 @@ const mongoose = require('mongoose');
 let appointmentsSchema = new mongoose.Schema({
     date: {
         type: Date,
-        required: true
+        required: [true, 'La data es obligatoria']
     },
     physio: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'physios',
-        required: true
+        required: [true, 'El id del physio es obligatori']
     },
     diagnosis: {
         type: String,
-        required: true,
-        minlength: 10,
-        maxlength: 500
+        required: [true, 'El diagnosis es obligatori'],
+        minlength: [10, 'El diagnosis es massa curt'],
+        maxlength: [500, 'El diagnosis es massa llarg']
     },
     treatment: {
         type: String,
-        required: true
+        required: [true, 'El tractament es obligatori']
     },
     observations: {
         type: String,
-        maxlength: 500
+        maxlength: [500, 'La observació es massa llarga']
     }
 });
 

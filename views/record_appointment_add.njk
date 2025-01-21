@@ -1,0 +1,59 @@
+{% extends "base.njk" %}
+
+{% block titol %} Appointment | Nou {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Insertar una nova cita</h1>
+
+    {% if errors.general %}
+        <p class="alert alert-danger">{{ errors.general }}</p>
+    {% endif %}
+
+    <form action="/records/{{ id }}/appointments" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="date">Data: </label>
+            {% if errors.date %}
+                <p class="text-danger">{{ errors.date }}</p>
+            {% endif %}
+            <input type="date" class="form-control" name="date" value="{{ dades.date }}">
+        </div>
+
+        <div class="form-group">
+            <label for="physioId">Physio ID: </label>
+            {% if errors.physioId %}
+                <p class="text-danger">{{ errors.physioId }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="physioId" 
+                placeholder="ID del physio..." value="{{ dades.physioId }}">
+        </div>
+
+        <div class="form-group">
+            <label for="diagnosis">Diagnosis: </label>
+            {% if errors.diagnosis %}
+                <p class="text-danger">{{ errors.diagnosis }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="diagnosis" 
+                placeholder="Diagnosis del patient..." value="{{ dades.diagnosis }}">
+        </div>
+
+        <div class="form-group">
+            <label for="treatment">Tractament: </label>
+            {% if errors.treatment %}
+                <p class="text-danger">{{ errors.treatment }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="treatment" 
+                placeholder="treatment del patient..." value="{{ dades.treatment }}">
+        </div>
+
+        <div class="form-group">
+            <label for="observations">observacions: </label>
+            {% if errors.observations %}
+                <p class="text-danger">{{ errors.observations }}</p>
+            {% endif %}
+            <input type="text" class="form-control" name="observations" 
+                placeholder="observations del patient..." value="{{ dades.observations }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+{% endblock %}
