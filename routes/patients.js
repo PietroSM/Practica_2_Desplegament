@@ -171,7 +171,6 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
             const resultat = await resultatPatient.save();
             res.redirect("/patients/"+resultat.id);
         }else{
-            console.log(object);
             res.render('error', {error: "Patient no trobat"});
         }
 

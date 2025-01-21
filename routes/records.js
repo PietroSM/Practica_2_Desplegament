@@ -105,7 +105,7 @@ router.post('/', upload.upload.single(), async (req, res) => {
 
 
 //Afegir consultes a un expedient.
-router.post('/:id/appointments', async (req, res) => {
+router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
     try{
         let nouAppointment = new Appointment({
             date : new Date(req.body.date),
@@ -114,7 +114,7 @@ router.post('/:id/appointments', async (req, res) => {
             treatment:req.body.treatment,
             observations: req.body.observations
         });
-    
+        
         const AfegirAppointment = await Record.findOneAndUpdate(
             {patient: req.params.id},
             { $push: { appointments: nouAppointment } },
@@ -124,9 +124,31 @@ router.post('/:id/appointments', async (req, res) => {
         if(!AfegirAppointment){
             res.status(404).send({error: "No s'ha trobat expedient"});
         }
-        res.status(201).send({result: AfegirAppointment});
+        res.redirect('/records/'+AfegirAppointment.id);
+
     }catch (error){
-        res.status(500).send({error: "Error al afegir la cita"});
+        console.log(error);
+        let errors = {
+            general: 'Error al afegir la cita'
+        };
+
+        if(error.errors.date){
+            errors.date = error.errors.date.message;
+        }
+        if(error.errors.physio){
+            errors.physio = error.errors.physio.message;
+        }
+        if(error.errors.diagnosis){
+            errors.diagnosis = error.errors.diagnosis.message;
+        }
+        if(error.errors.treatment){
+            errors.treatment = error.errors.treatment.message;
+        }
+        if(error.errors.observations){
+            errors.observations = error.errors.observations.message;
+        }
+
+        res.render('record_appointment_add', {errors: errors, dades: req.body});
     }
 });
 
