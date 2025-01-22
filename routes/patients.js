@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 
 let Patient = require(__dirname + "/../models/patient.js");
 const User = require(__dirname + '/../models/user.js');
-let router = express.Router();
 const upload = require(__dirname + '/../utils/uploads.js');
-
+const auth = require(__dirname + '/../utils/auth.js');
+let router = express.Router();
 
 //Llistat de tots els pacients.
-router.get('/', async (req, res) => {
+router.get('/',  /*auth.autenticacio, auth.rol(['patient']),*/ async (req, res) => {
     try{
         const resultat = await Patient.find();
 
@@ -86,17 +86,11 @@ router.get('/:id', async (req, res) =>{
 //Insertar un pacient.
 router.post('/', upload.upload.single('image'), async (req, res) =>{
     try{
-        // const hash = bcrypt.hashSync(req.body.password, 10);
-
-        // let nouUsuari = new User({
-        //     login: req.body.login,
-        //     password: hash,
-        //     rol: "patient"
-        // });
+        const hash = bcrypt.hashSync(req.body.password, 10);
 
         let nouUsuari = new User({
             login: req.body.login,
-            password: req.body.password,
+            password: hash,
             rol: "patient"
         });
 
@@ -121,30 +115,39 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         res.redirect(req.baseUrl);
         
     }catch(error){
-        console.log(error);
+
         let errors = {
             general: 'Error insertant pacient'
         };
-        if(error.errors.name){
-            errors.name = error.errors.name.message;
-        }
-        if(error.errors.surname){
-            errors.surname = error.errors.surname.message;
-        }
-        if(error.errors.birthDate){
-            errors.birthDate = error.errors.birthDate.message;
-        }
-        if(error.errors.address){
-            errors.address = error.errors.address.message;
-        }
-        if(error.errors.insuranceNumber){
-            errors.insuranceNumber = error.errors.insuranceNumber.message;
-        }
-        if(error.errors.login){
-            errors.login = error.errors.login.message;
-        }
-        if(error.errors.password){
-            errors.password = error.errors.password.message;
+
+        if(error.code === 11000){
+            if(error.keyPattern.login){
+                errors.login = 'Aquest login ja existeix.';
+            }else if(error.keyPattern.insuranceNumber){
+                errors.insuranceNumber = 'Aquest insuranceNumber ja existeix';
+            }
+        }else if( error.errors){
+            if(error.errors.name){
+                errors.name = error.errors.name.message;
+            }
+            if(error.errors.surname){
+                errors.surname = error.errors.surname.message;
+            }
+            if(error.errors.birthDate){
+                errors.birthDate = error.errors.birthDate.message;
+            }
+            if(error.errors.address){
+                errors.address = error.errors.address.message;
+            }
+            if(error.errors.insuranceNumber){
+                errors.insuranceNumber = error.errors.insuranceNumber.message;
+            }
+            if(error.errors.login){
+                errors.login = error.errors.login.message;
+            }
+            if(error.errors.password){
+                errors.password = error.errors.password.message;
+            }
         }
 
         res.render('patient_add', {errors: errors, dades: req.body});
@@ -179,20 +182,35 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
         let errors = {
             general: 'Error Editant pacient'
         };
-        if(error.errors.name){
-            errors.name = error.errors.name.message;
-        }
-        if(error.errors.surname){
-            errors.surname = error.errors.surname.message;
-        }
-        if(error.errors.birthDate){
-            errors.birthDate = error.errors.birthDate.message;
-        }
-        if(error.errors.address){
-            errors.address = error.errors.address.message;
-        }
-        if(error.errors.insuranceNumber){
-            errors.insuranceNumber = error.errors.insuranceNumber.message;
+
+        if(error.code === 11000){
+            if(error.keyPattern.login){
+                errors.login = 'Aquest login ja existeix.';
+            }else if(error.keyPattern.insuranceNumber){
+                errors.insuranceNumber = 'Aquest insuranceNumber ja existeix';
+            }
+        }else if( error.errors){
+            if(error.errors.name){
+                errors.name = error.errors.name.message;
+            }
+            if(error.errors.surname){
+                errors.surname = error.errors.surname.message;
+            }
+            if(error.errors.birthDate){
+                errors.birthDate = error.errors.birthDate.message;
+            }
+            if(error.errors.address){
+                errors.address = error.errors.address.message;
+            }
+            if(error.errors.insuranceNumber){
+                errors.insuranceNumber = error.errors.insuranceNumber.message;
+            }
+            if(error.errors.login){
+                errors.login = error.errors.login.message;
+            }
+            if(error.errors.password){
+                errors.password = error.errors.password.message;
+            }
         }
         
         res.render('patient_edit', {errors: errors, patient: {
@@ -205,33 +223,6 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
         }});
     }
 });
-
-
-
-
-
-// router.put('/:id', async (req, res) => {
-//     try{
-
-//         const resultat = await Patient.findByIdAndUpdate(req.params.id, {
-//             $set: {
-//                 name: req.body.name,
-//                 surname: req.body.surname,
-//                 birthDate: new Date(req.body.birthDate),
-//                 address: req.body.address,
-//                 insuranceNumber: req.body.insuranceNumber 
-//             }}, {new: true});
-        
-//         if(resultat){
-//             res.status(200).send({result: resultat});
-//         }else{
-//             res.status(400).send({result: "Error, no es troba el pacient"});
-//         }
-//     } catch(error){
-//         res.status(500).send({error: "Error Servidor"});
-//     }
-// });
-
 
 
 module.exports = router;

@@ -84,7 +84,7 @@ router.post('/', upload.upload.single(), async (req, res) => {
             medicalRecord: req.body.medicalRecord
         });
 
-        console.log(req.body.medicalRecord);
+
 
         const resultat = await nouRecords.save();
         res.redirect(req.baseUrl);

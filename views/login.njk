@@ -1,0 +1,29 @@
+{% extends "base.njk" %}
+
+{% block titol %} Login {% endblock %}
+
+{% block contingut %}
+    <h1 class="mb-4">Login</h1>
+
+    {% if (error) %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+
+    <form action="/auth/login" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="nombre">Usuario:</label>
+            <input type="text" class="form-control" name="login"
+             placeholder="Login del usuari..." />
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" name="password"
+             placeholder="Password del usuari..." />
+        </div>
+        <button type="submit" class="btn btn-primary">
+            Enviar
+        </button>
+    </form>
+
+{% endblock %}
