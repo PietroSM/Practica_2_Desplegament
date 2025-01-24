@@ -1,3 +1,5 @@
+const User = require(__dirname + '/../models/user.js');
+
 let autenticacio = (req, res, next) => {
     if (req.session && req.session.login)
         return next();
@@ -6,13 +8,25 @@ let autenticacio = (req, res, next) => {
 };
 
 let rol = (rol) => {
-    return (req, res, next) => {
-        //TODO
+    return async (req, res, next) => {
         if (rol.some(r => r === req.session.rol)){
-            next();
+                    if(req.session.rol === "patient"){
+
+                        const resultat = await User.findById(req.params.id);
+
+                        if(resultat && resultat.login === req.session.login){
+                            next();
+                        }else{
+                            res.redirect('/public/index.html');
+                        }
+                    }else{
+                        next();
+                    }
+        }else if(req.session.rol === "patient"){
+            res.render('error', {error: "No tens accès"});
         }
         else{
-            res.redirect('/auth/login');
+            res.render('error', {error: "No tens accès"});
         }
     }
 }

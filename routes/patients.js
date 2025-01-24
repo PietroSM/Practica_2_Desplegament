@@ -7,8 +7,8 @@ const upload = require(__dirname + '/../utils/uploads.js');
 const auth = require(__dirname + '/../utils/auth.js');
 let router = express.Router();
 
-//Llistat de tots els pacients.
-router.get('/',  /*auth.autenticacio, auth.rol(['patient']),*/ async (req, res) => {
+//Llistat de tots els pacients. ✔
+router.get('/',  auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{
         const resultat = await Patient.find();
 
@@ -23,15 +23,14 @@ router.get('/',  /*auth.autenticacio, auth.rol(['patient']),*/ async (req, res) 
 });
 
 
-//Formulari nou patient
-router.get('/new', (req, res) => {
+//Formulari nou patient ✔
+router.get('/new', auth.autenticacio, auth.rol(["admin", "physio"]), (req, res) => {
     res.render('patient_add');
 });
 
 
-
-//Buscar Pacients per nom o cognoms.
-router.get('/find', async(req, res) => {
+//Buscar Pacients per nom o cognoms. ✔
+router.get('/find', auth.autenticacio, auth.rol(["admin", "physio"]), async(req, res) => {
     try{
         const resultat = await
         Patient.find({
@@ -49,9 +48,21 @@ router.get('/find', async(req, res) => {
     }
 });
 
+//Esborrar el Patient.
+router.delete('/:id', async (req, res) => {
+    try{
+        console.log("hola");
+        await Patient.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(req.params.id);
+        res.redirect(req.baseUrl);
+    }catch {
+        res.render('error', {error: "Error esborrant Patient"});
+    }
+});
 
-//Formulari modificar pacient.
-router.get('/:id/edit', async(req, res) => {
+
+//Formulari modificar pacient. ✔
+router.get('/:id/edit', auth.autenticacio, auth.rol(["admin", "physio"]), async(req, res) => {
     try{
         const resultat = await Patient.findById(req.params['id']);
 
@@ -68,8 +79,8 @@ router.get('/:id/edit', async(req, res) => {
 });
 
 
-//Detalls d'un pacient especific.
-router.get('/:id', async (req, res) =>{
+//Detalls d'un pacient especific. ✔
+router.get('/:id', auth.autenticacio, auth.rol(["patient","admin", "physio"]), async (req, res) =>{
     try{
         const resultat = await Patient.findById(req.params.id);
         if(resultat){
@@ -83,8 +94,9 @@ router.get('/:id', async (req, res) =>{
 });
 
 
-//Insertar un pacient.
-router.post('/', upload.upload.single('image'), async (req, res) =>{
+//Insertar un pacient. ✔
+router.post('/', upload.upload.single('image'), auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) =>{
+    let idUsuari = null;
     try{
         const hash = bcrypt.hashSync(req.body.password, 10);
 
@@ -95,7 +107,7 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         });
 
         const resultatUsuari = await nouUsuari.save();
-        const idUsuari = resultatUsuari._id;
+        idUsuari = resultatUsuari._id;
 
         let nouPatient = new Patient({
             _id: idUsuari,
@@ -106,7 +118,6 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
             insuranceNumber: req.body.insuranceNumber
         });
 
-
         if(req.file){
             nouPatient.image = req.file.filename;
         }
@@ -114,7 +125,11 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         const resultat = await nouPatient.save();
         res.redirect(req.baseUrl);
         
-    }catch(error){
+    }catch (error){
+
+        if (idUsuari) {
+            await User.findByIdAndDelete(idUsuari);
+        }
 
         let errors = {
             general: 'Error insertant pacient'
@@ -126,7 +141,8 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
             }else if(error.keyPattern.insuranceNumber){
                 errors.insuranceNumber = 'Aquest insuranceNumber ja existeix';
             }
-        }else if( error.errors){
+        }else if(error.errors){
+
             if(error.errors.name){
                 errors.name = error.errors.name.message;
             }
@@ -155,8 +171,8 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
 });
 
 
-//Actualitza les dades a un pacient.
-router.post('/:id', upload.upload.single('image'), async(req, res) => {
+//Actualitza les dades a un pacient. ✔
+router.post('/:id', upload.upload.single('image'), auth.autenticacio, auth.rol(["admin", "physio"]), async(req, res) => {
     try{
         const resultatPatient = await Patient.findById(req.params.id);
 
@@ -178,7 +194,6 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
         }
 
     }catch(error){
-        console.log(error);
         let errors = {
             general: 'Error Editant pacient'
         };
@@ -217,12 +232,13 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
             id: req.params.id,
             name: req.body.name,
             surname: req.body.surname,
-            birthDate: req.body.birthDate,
             address: req.body.address,
             insuranceNumber: req.body.insuranceNumber
-        }});
+        }, data:req.body.birthDate
+    });
     }
 });
+
 
 
 module.exports = router;

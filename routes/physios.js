@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 
 let Physio = require(__dirname + "/../models/physio.js");
 const User = require(__dirname + '/../models/user.js');
@@ -79,9 +80,11 @@ router.get('/:id', async (req, res) => {
 //Insertar un fisioterapeuta.
 router.post('/', upload.upload.single('image'), async (req, res) =>{
     try{
+        const hash = bcrypt.hashSync(req.body.password, 10);
+
         let nouUsuari = new User({
             login: req.body.login,
-            password: req.body.password,
+            password: hash,
             rol: "physio"
         });
 

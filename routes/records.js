@@ -108,23 +108,25 @@ router.post('/', upload.upload.single(), async (req, res) => {
 router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
     try{
         let nouAppointment = new Appointment({
-            date : new Date(req.body.date),
+            date : req.body.date,
             physio: req.body.physio,
             diagnosis: req.body.diagnosis,
             treatment:req.body.treatment,
             observations: req.body.observations
         });
         
+        await nouAppointment.validate();
+
         const AfegirAppointment = await Record.findOneAndUpdate(
             {patient: req.params.id},
             { $push: { appointments: nouAppointment } },
             { new: true }
         );
 
-        if(!AfegirAppointment){
-            res.status(404).send({error: "No s'ha trobat expedient"});
+        if(AfegirAppointment){
+            res.redirect('/records/'+AfegirAppointment.id);
         }
-        res.redirect('/records/'+AfegirAppointment.id);
+
 
     }catch (error){
         console.log(error);
@@ -136,7 +138,7 @@ router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
             errors.date = error.errors.date.message;
         }
         if(error.errors.physio){
-            errors.physio = error.errors.physio.message;
+            errors.physio = 'Id no valid';
         }
         if(error.errors.diagnosis){
             errors.diagnosis = error.errors.diagnosis.message;
@@ -148,7 +150,13 @@ router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
             errors.observations = error.errors.observations.message;
         }
 
-        res.render('record_appointment_add', {errors: errors, dades: req.body});
+        res.render('record_appointment_add', 
+            {
+                errors: errors, 
+                dades: req.body, 
+                id: req.params.id,
+            }
+        );
     }
 });
 
