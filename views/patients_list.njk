@@ -20,21 +20,24 @@
                 <td>{{ patient.birthDate}}</td>
                 <td>{{ patient.address }}</td>
                 <td>{{ patient.insuranceNumber }}</td>
-                <td>
-                    <a class="btn btn-primary" href="/patients/{{ patient.id }}/edit">Editar</a>
-                </td>
-                <td>
-                    <a class="btn btn-success" href="/patients/{{ patient.id }}">Fitxa</a>
-                </td>
-                <td>
-                    <form style="display:inline" action="/patients/{{ patient.id }}" method="post">
-                        <input type="hidden" name="_method" value="delete" />
-                        <button type="submit" class="btn btn-danger">Esborrar</button>
-                    </form>
-                </td>
-                <td>
-                    <a class="btn btn-primary" href="">Expedient</a>
-                </td>
+                
+                {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
+                    <td>
+                        <a class="btn btn-primary" href="/patients/{{ patient.id }}/edit">Editar</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-success" href="/patients/{{ patient.id }}">Fitxa</a>
+                    </td>
+                    <td>
+                        <form style="display:inline" action="/patients/{{ patient.id }}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-danger">Esborrar</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="/records/new/{{ patient.id }}">Expedient</a>
+                    </td>
+                {% endif %}
             </tr>
 
         {% endfor %}

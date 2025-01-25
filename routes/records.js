@@ -25,9 +25,17 @@ router.get('/', auth.autenticacio, auth.rol(["admin", "physio"]), async (req, re
 });
 
 
-//Formulari nou record ✔
+//Formulari nou record. ✔
 router.get('/new', auth.autenticacio, auth.rol(["admin", "physio"]), (req, res) => {
     res.render('record_add');
+});
+
+
+//Formulari nou record amb id. ✔
+router.get('/new/:id', auth.autenticacio, auth.rol(["admin", "physio"]), (req, res) => {
+    res.render('record_add', {dades: {
+        patient: req.params.id
+    }});
 });
 
 
