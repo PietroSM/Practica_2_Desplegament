@@ -5,10 +5,11 @@ let Physio = require(__dirname + "/../models/physio.js");
 const User = require(__dirname + '/../models/user.js');
 let router = express.Router();
 const upload = require(__dirname + '/../utils/uploads.js');
+const auth = require(__dirname + '/../utils/auth.js');
 
 
-//Llistat de tots els fisioterapeutes.
-router.get('/', async (req, res) => {
+//Llistat de tots els fisioterapeutes. ✔
+router.get('/', auth.autenticacio, async (req, res) => {
     try{
         const resultat = await Physio.find();
 
@@ -22,13 +23,15 @@ router.get('/', async (req, res) => {
     }
 });
 
-//Formulari nou pacient
-router.get('/new', (req, res) => {
+
+//Formulari nou physio. ✔
+router.get('/new', auth.autenticacio, auth.rol(["admin"]), (req, res) => {
     res.render('physio_add');
 });
 
-//Buscar fisioterapeutes per especialitats.
-router.get('/find', async (req, res) =>{
+
+//Buscar fisioterapeutes per especialitats. ✔
+router.get('/find', auth.autenticacio, async (req, res) =>{
     try{
         const resultat = await Physio.find({
             specialty: { $regex: req.query.specialty, $options: 'i' }
@@ -45,11 +48,12 @@ router.get('/find', async (req, res) =>{
     }
 });
 
+
 //Formulari modificar physio.
-router.get('/:id/edit', async(req, res) => {
+router.get('/:id/edit',  auth.autenticacio, auth.rol(["admin"]), async(req, res) => {
     try{
         const resultat = await Physio.findById(req.params['id']);
-
+        
         if(resultat){
             res.render('physio_edit', {error: "Physio no trobat"});
         }else{
@@ -62,8 +66,8 @@ router.get('/:id/edit', async(req, res) => {
 });
 
 
-//Detalls d'un fisioterapeuta especific.
-router.get('/:id', async (req, res) => {
+//Detalls d'un fisioterapeuta especific. ✔
+router.get('/:id', auth.autenticacio, async (req, res) => {
     try{
         const resultat = await Physio.findById(req.params.id);
         if(resultat){
@@ -77,8 +81,9 @@ router.get('/:id', async (req, res) => {
 });
 
 
-//Insertar un fisioterapeuta.
-router.post('/', upload.upload.single('image'), async (req, res) =>{
+//Insertar un fisioterapeuta. ✔
+router.post('/', upload.upload.single('image'), auth.autenticacio, auth.rol(["admin"]), async (req, res) =>{
+    let idUsuari = null;
     try{
         const hash = bcrypt.hashSync(req.body.password, 10);
 
@@ -89,7 +94,7 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         });
 
         const resultatUsuari = await nouUsuari.save();
-        const idUsuari = resultatUsuari._id;
+        idUsuari = resultatUsuari._id;
 
         let nouPhysio = new Physio({
             _id: idUsuari,
@@ -106,33 +111,46 @@ router.post('/', upload.upload.single('image'), async (req, res) =>{
         const resultat = await nouPhysio.save();
         res.redirect(req.baseUrl);
     }catch(error){
+        if (idUsuari) {
+            await User.findByIdAndDelete(idUsuari);
+        }
+
         let errors = {
             general: 'Error al inserir un fisioterapeuta'
         };
-        if(error.errors.name){
-            errors.name = error.errors.name.message;
-        }
-        if(error.errors.surname){
-            errors.surname = error.errors.surname.message;
-        }
-        if(error.errors.specialty){
-            errors.specialty = error.errors.specialty.message;
-        }
-        if(error.errors.licenseNumber){
-            errors.licenseNumber = error.errors.licenseNumber.message;
-        }
-        if(error.errors.login){
-            errors.login = error.errors.login.message;
-        }
-        if(error.errors.password){
-            errors.password = error.errors.password.message;
+
+        if(error.code === 11000){
+            if(error.keyPattern.login){
+                errors.login = 'Aquest login ja existeix.';
+            }else if(error.keyPattern.licenseNumber){
+                errors.licenseNumber = 'Aquest licenseNumber ja existeix';
+            }
+        }else if(error.errors){
+            if(error.errors.name){
+                errors.name = error.errors.name.message;
+            }
+            if(error.errors.surname){
+                errors.surname = error.errors.surname.message;
+            }
+            if(error.errors.specialty){
+                errors.specialty = error.errors.specialty.message;
+            }
+            if(error.errors.licenseNumber){
+                errors.licenseNumber = error.errors.licenseNumber.message;
+            }
+            if(error.errors.login){
+                errors.login = error.errors.login.message;
+            }
+            if(error.errors.password){
+                errors.password = error.errors.password.message;
+            }
         }
 
         res.render('physio_add', {errors: errors, dades: req.body});
     }
 });
 
-//Actualitza les dades a un pacient.
+//Actualitza les dades a un physio.
 router.post('/:id', upload.upload.single('image'), async(req, res) => {
     try{
         const resultatPhysio = await Physio.findById(req.params.id);
@@ -154,22 +172,28 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
         }
 
     }catch(error){
-        console.log(error);
 
         let errors = {
             general: 'Error al Editant un fisioterapeuta'
         };
-        if(error.errors.name){
-            errors.name = error.errors.name.message;
-        }
-        if(error.errors.surname){
-            errors.surname = error.errors.surname.message;
-        }
-        if(error.errors.specialty){
-            errors.specialty = error.errors.specialty.message;
-        }
-        if(error.errors.licenseNumber){
-            errors.licenseNumber = error.errors.licenseNumber.message;
+
+        if(error.code === 11000){
+            if(error.keyPattern.licenseNumber){
+                errors.licenseNumber = 'Aquest licenseNumber ja existeix';
+            }
+        }else if(error.errors){
+            if(error.errors.name){
+                errors.name = error.errors.name.message;
+            }
+            if(error.errors.surname){
+                errors.surname = error.errors.surname.message;
+            }
+            if(error.errors.specialty){
+                errors.specialty = error.errors.specialty.message;
+            }
+            if(error.errors.licenseNumber){
+                errors.licenseNumber = error.errors.licenseNumber.message;
+            }
         }
 
         res.render('physio_edit', {errors: errors, dades: {
@@ -182,28 +206,6 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
     }
 });
 
-
-//Actualitza les dades a un fisioterapeuta.
-// router.put('/:id', async (req, res) => {
-//     try{
-
-//         const resultat = await Physio.findByIdAndUpdate(req.params.id, {
-//             $set: {
-//                 name: req.body.name,
-//                 surname: req.body.surname,
-//                 specialty: req.body.specialty,
-//                 licenseNumber: req.body.licenseNumber
-//             }}, {new: true});
-        
-//         if(resultat){
-//             res.status(200).send({result: resultat});
-//         }else{
-//             res.status(400).send({result: "Error, no es troba el fisioterapeuta"});
-//         }
-//     } catch(error){
-//         res.status(500).send({error: "Error Servidor"});
-//     }
-// });
 
 
 //Eliminar un fisioterapeuta.

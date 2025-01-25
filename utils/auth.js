@@ -17,7 +17,7 @@ let rol = (rol) => {
                         if(resultat && resultat.login === req.session.login){
                             next();
                         }else{
-                            res.redirect('/public/index.html');
+                            res.redirect('/physios');
                         }
                     }else{
                         next();
@@ -30,6 +30,7 @@ let rol = (rol) => {
         }
     }
 }
+
 
 module.exports = {
     autenticacio: autenticacio,

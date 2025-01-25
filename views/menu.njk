@@ -7,21 +7,24 @@
     <a class="btn btn-dark" href="/records">Record</a>
     <a class="btn btn-dark" href="/records/new">Nou Record</a>
 
-{% if (session and (session.rol == "admin" or session.rol == "physio")) %}
-    <form action="/patients/find" method="get" class="d-flex align-items-center">
-        <input type="text" name="surname" placeholder="cognom..." class="form-control me-2"/>
-        <button type="submit" class="btn btn-dark">Cercar Patient</button>
-    </form>
+    {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
+        <form action="/patients/find" method="get" class="d-flex align-items-center">
+            <input type="text" name="surname" placeholder="cognom..." class="form-control me-2"/>
+            <button type="submit" class="btn btn-dark">Cercar Patient</button>
+        </form>
+    {% endif %}
 
-    <form action="/physios/find" method="get" class="d-flex align-items-center">
-        <input type="text" name="specialty" placeholder="specialty..." class="form-control me-2"/>
-        <button type="submit" class="btn btn-dark">Cercar Physio</button>
-    </form>
+    {% if (session and (session.rol == "admin" or session.rol == "physio" or session.rol == "patient")) %}
+        <form action="/physios/find" method="get" class="d-flex align-items-center">
+            <input type="text" name="specialty" placeholder="specialty..." class="form-control me-2"/>
+            <button type="submit" class="btn btn-dark">Cercar Physio</button>
+        </form>
+    {% endif %}
 
     <form action="/records/find" method="get" class="d-flex align-items-center">
         <input type="text" name="surname" placeholder="Cognom..." class="form-control me-2"/>
         <button type="submit" class="btn btn-dark">Cercar Physio</button>
     </form>
-{% endif %}
+
 
 </div>

@@ -48,10 +48,9 @@ router.get('/find', auth.autenticacio, auth.rol(["admin", "physio"]), async(req,
     }
 });
 
-//Esborrar el Patient.
-router.delete('/:id', async (req, res) => {
+//Esborrar el Patient. ✔
+router.delete('/:id',auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{
-        console.log("hola");
         await Patient.findByIdAndDelete(req.params.id);
         await User.findByIdAndDelete(req.params.id);
         res.redirect(req.baseUrl);
@@ -199,9 +198,7 @@ router.post('/:id', upload.upload.single('image'), auth.autenticacio, auth.rol([
         };
 
         if(error.code === 11000){
-            if(error.keyPattern.login){
-                errors.login = 'Aquest login ja existeix.';
-            }else if(error.keyPattern.insuranceNumber){
+            if(error.keyPattern.insuranceNumber){
                 errors.insuranceNumber = 'Aquest insuranceNumber ja existeix';
             }
         }else if( error.errors){
@@ -219,12 +216,6 @@ router.post('/:id', upload.upload.single('image'), auth.autenticacio, auth.rol([
             }
             if(error.errors.insuranceNumber){
                 errors.insuranceNumber = error.errors.insuranceNumber.message;
-            }
-            if(error.errors.login){
-                errors.login = error.errors.login.message;
-            }
-            if(error.errors.password){
-                errors.password = error.errors.password.message;
             }
         }
         
