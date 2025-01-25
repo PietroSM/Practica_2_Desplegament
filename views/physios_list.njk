@@ -23,16 +23,20 @@
                 <td>{{ physio.specialty }}</td>
                 <td>{{ physio.licenseNumber }}</td>
                 <td>
-                    <a class="btn btn-primary" href="/physios/editar/{{ physio.id }}">Editar</a>
+                    {% if (session and session.rol == "admin") %}
+                        <a class="btn btn-primary" href="/physios/{{ physio.id }}/edit">Editar</a>
+                    {% endif %}
                 </td>
                 <td>
                     <a class="btn btn-success" href="/physios/{{ physio.id }}">Fitxa</a>
                 </td>
                 <td>
-                    <form style="display:inline" action="/physios/{{ physio.id }}" method="post">
-                        <input type="hidden" name="_method" value="delete" />
-                        <button type="submit" class="btn btn-danger">Esborrar</button>
-                    </form>
+                    {% if (session and session.rol == "admin") %}
+                        <form style="display:inline" action="/physios/{{ physio.id }}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-danger">Esborrar</button>
+                        </form>
+                    {% endif %}
                 </td>
             </tr>
 

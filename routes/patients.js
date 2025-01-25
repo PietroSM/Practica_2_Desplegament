@@ -48,6 +48,7 @@ router.get('/find', auth.autenticacio, auth.rol(["admin", "physio"]), async(req,
     }
 });
 
+
 //Esborrar el Patient. ✔
 router.delete('/:id',auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{

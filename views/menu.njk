@@ -1,11 +1,27 @@
 <div class="alert alert-secondary d-flex align-items-center gap-2">
-    <a class="btn btn-dark" href="/login">Login</a>
-    <a class="btn btn-dark" href="/patients">Patient</a>
-    <a class="btn btn-dark" href="/patients/new">Nou Patient</a>
-    <a class="btn btn-dark" href="/physios">Physio</a>
-    <a class="btn btn-dark" href="/physios/new">Nou Physio</a>
-    <a class="btn btn-dark" href="/records">Record</a>
-    <a class="btn btn-dark" href="/records/new">Nou Record</a>
+    {% if (session and session.login) %}
+        <a class="btn btn-dark" href="/auth/logout">Logout</a>
+    {% else %}
+        <a class="btn btn-dark" href="/auth/login">Login</a>
+    {% endif %}
+
+    {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
+        <a class="btn btn-dark" href="/patients">Patient</a>
+        <a class="btn btn-dark" href="/patients/new">Nou Patient</a>
+    {% endif %}
+
+    {% if (session and session.login) %}
+        <a class="btn btn-dark" href="/physios">Physio</a>
+    {% endif %}
+
+    {% if (session and session.rol == "admin") %}
+        <a class="btn btn-dark" href="/physios/new">Nou Physio</a>
+    {% endif %}
+
+    {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
+        <a class="btn btn-dark" href="/records">Record</a>
+        <a class="btn btn-dark" href="/records/new">Nou Record</a>
+    {% endif %}
 
     {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
         <form action="/patients/find" method="get" class="d-flex align-items-center">
@@ -14,17 +30,18 @@
         </form>
     {% endif %}
 
-    {% if (session and (session.rol == "admin" or session.rol == "physio" or session.rol == "patient")) %}
+    {% if (session and session.login) %}
         <form action="/physios/find" method="get" class="d-flex align-items-center">
             <input type="text" name="specialty" placeholder="specialty..." class="form-control me-2"/>
             <button type="submit" class="btn btn-dark">Cercar Physio</button>
         </form>
     {% endif %}
 
-    <form action="/records/find" method="get" class="d-flex align-items-center">
-        <input type="text" name="surname" placeholder="Cognom..." class="form-control me-2"/>
-        <button type="submit" class="btn btn-dark">Cercar Physio</button>
-    </form>
-
+    {% if (session and (session.rol == "admin" or session.rol == "physio")) %}
+        <form action="/records/find" method="get" class="d-flex align-items-center">
+            <input type="text" name="surname" placeholder="Cognom..." class="form-control me-2"/>
+            <button type="submit" class="btn btn-dark">Cercar Registre</button>
+        </form>
+    {% endif %}
 
 </div>

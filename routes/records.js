@@ -5,9 +5,12 @@ let Patient = require(__dirname + "/../models/patient.js");
 const User = require(__dirname + '/../models/user.js');
 let router = express.Router();
 const upload = require(__dirname + '/../utils/uploads.js');
+const auth = require(__dirname + '/../utils/auth.js');
 
-//Obtindre tots els expedients mèdics.
-router.get('/', async (req, res) => {
+
+
+//Obtindre tots els expedients mèdics. ✔
+router.get('/', auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{
         const resultat = await Record.find().populate('patient');
 
@@ -22,21 +25,20 @@ router.get('/', async (req, res) => {
 });
 
 
-//Formulari nou record
-router.get('/new', (req, res) => {
+//Formulari nou record ✔
+router.get('/new', auth.autenticacio, auth.rol(["admin", "physio"]), (req, res) => {
     res.render('record_add');
 });
 
-//Formulari nova cita
-router.get('/:id/appointments/new', (req, res) => {
+
+//Formulari nova cita. ✔
+router.get('/:id/appointments/new', auth.autenticacio, auth.rol(["admin", "physio"]), (req, res) => {
     res.render('record_appointment_add', {id: req.params.id});
 });
 
 
-
-
-//Buscar expedients per nom de pacient.
-router.get('/find', async(req, res) => {
+//Buscar expedients per nom de pacient. ✔
+router.get('/find', auth.autenticacio, auth.rol(["admin", "physio"]), async(req, res) => {
     try{
         const resultatPatient = await
         Patient.find({
@@ -54,15 +56,16 @@ router.get('/find', async(req, res) => {
             res.render('records_list', { records: resultatRecord});
         }else{
             res.render('error',{error: "No es van trobar expedients associats al" +
-                "cognom ingressat."});        }
+                "cognom ingressat."});        
+        }
     }catch (error){
-        res.status(500).send({error: "Error buscant el expedient indicat"});
+        res.render('error',{error: "Error buscant el expedient indicat"});
     }
 });
 
 
-//Obtindre detalls d'un expedient especific.
-router.get('/:id', async (req, res) => {
+//Obtindre detalls d'un expedient especific. ✔
+router.get('/:id', auth.autenticacio, auth.rol(["patient","admin", "physio"]), async (req, res) => {
     try{
         const resultat = await Record.findById(req.params.id).populate('patient');
         if(resultat){
@@ -76,15 +79,13 @@ router.get('/:id', async (req, res) => {
 });
 
 
-//Inserir un expedient mèdic.
-router.post('/', upload.upload.single(), async (req, res) => {
+//Inserir un expedient mèdic. ✔
+router.post('/', upload.upload.single(),auth.autenticacio, auth.rol(["patient","admin", "physio"]), async (req, res) => {
     try{
         let nouRecords = new Record({
             patient: req.body.patient,
             medicalRecord: req.body.medicalRecord
         });
-
-
 
         const resultat = await nouRecords.save();
         res.redirect(req.baseUrl);
@@ -92,8 +93,15 @@ router.post('/', upload.upload.single(), async (req, res) => {
         let errors = {
             general: 'Error al inserir un expedient'
         };
+
+        if(error.code === 11000){
+            if(error.keyPattern.patient){
+                errors.patient = 'Aquest patient ja existeix amb expedient.';
+            }
+        }
+
         if(error.errors.patient){
-            errors.patient = error.errors.patient.message;
+            errors.patient = "La id de patient es obligatoria i ha d\'existir.";
         }
         if(error.errors.medicalRecord){
             errors.medicalRecord = error.errors.medicalRecord.message;
@@ -104,8 +112,8 @@ router.post('/', upload.upload.single(), async (req, res) => {
 });
 
 
-//Afegir consultes a un expedient.
-router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
+//Afegir consultes a un expedient. ✔
+router.post('/:id/appointments', upload.upload.single(), auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{
         let nouAppointment = new Appointment({
             date : req.body.date,
@@ -129,7 +137,6 @@ router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
 
 
     }catch (error){
-        console.log(error);
         let errors = {
             general: 'Error al afegir la cita'
         };
@@ -162,16 +169,12 @@ router.post('/:id/appointments', upload.upload.single(), async (req, res) => {
 
 
 //Eliminar un expedient medic.
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth.autenticacio, auth.rol(["admin", "physio"]), async (req, res) => {
     try{
-        const resultat = await Record.findOnedAndDelete({patient: req.params.id});
-        if(resultat){
-            res.status(200).send({result: resultat});
-        }else{
-            res.status(404).send({result: "Error, no es troba el Expedient"});
-        }
+        await Record.findByIdAndDelete(req.params.id);
+        res.redirect(req.baseUrl);
     }catch (error){
-        res.status(500).send({error: "Error Servidor"});
+        res.render('error', {error: "Error esborrant Record"});
     }
 });
 

@@ -49,13 +49,13 @@ router.get('/find', auth.autenticacio, async (req, res) =>{
 });
 
 
-//Formulari modificar physio.
+//Formulari modificar physio. ✔
 router.get('/:id/edit',  auth.autenticacio, auth.rol(["admin"]), async(req, res) => {
     try{
         const resultat = await Physio.findById(req.params['id']);
-        
+
         if(resultat){
-            res.render('physio_edit', {error: "Physio no trobat"});
+            res.render('physio_edit', {physio: resultat});
         }else{
             res.render('error', {error: "Physio no trobat"});
         }
@@ -150,8 +150,8 @@ router.post('/', upload.upload.single('image'), auth.autenticacio, auth.rol(["ad
     }
 });
 
-//Actualitza les dades a un physio.
-router.post('/:id', upload.upload.single('image'), async(req, res) => {
+//Actualitza les dades a un physio. ✔
+router.post('/:id', upload.upload.single('image'), auth.autenticacio, auth.rol(["admin"]), async(req, res) => {
     try{
         const resultatPhysio = await Physio.findById(req.params.id);
 
@@ -166,7 +166,7 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
             }
 
             const resultat = await resultatPhysio.save();
-            res.render("/physio/"+resultat.id);
+            res.redirect("/physios/"+resultat.id);
         }else{
             res.render('error', {error: "Physio no trobat"});
         }
@@ -196,7 +196,7 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
             }
         }
 
-        res.render('physio_edit', {errors: errors, dades: {
+        res.render('physio_edit', {errors: errors, physio: {
             id: req.params.id,
             name: req.body.name,
             surname: req.body.surname,
@@ -207,19 +207,14 @@ router.post('/:id', upload.upload.single('image'), async(req, res) => {
 });
 
 
-
-//Eliminar un fisioterapeuta.
+//Esborrar un fisioterapeuta. ✔
 router.delete('/:id', async (req, res) => {
     try{
-        const resultat = await Physio.findByIdAndDelete(req.params.id);
-
-        if(resultat){
-            res.status(200).send({result: resultat});
-        }else{
-            res.status(404).send({result: "Error, no es troba el fisioterapeuta"});
-        }
+        await Physio.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(req.params.id);
+        res.redirect(req.baseUrl);
     }catch (error){
-        res.status(500).send({error: "Error Servidor"});
+
     }
 });
 
