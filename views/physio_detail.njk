@@ -14,11 +14,12 @@
                 <p><strong>Número de licencia: </strong>{{ physio.licenseNumber }}</p>
                 
                 {% if (session and session.rol == "admin") %}
-                    <a class="btn btn-primary" href="/physios/{{ physios.id }}/edit">Editar</a>
+                    <a class="btn btn-primary" href="/physios/{{ physio.id }}/edit">Editar</a>
                 {% endif %}
                 
-                {% if physios.image %}
-                    <p><img src="/public/uploads/{{ physios.image }}"></p>
+                <p>hola{{ physio.image }}</p>
+                {% if physio.image %}
+                    <p><img src="/public/uploads/{{ physio.image }}"></p>
                 {% endif %}
             </div>
         </div>
